@@ -1,26 +1,190 @@
 @import "tailwindcss";
+/* Bare `@import "tw-animate-css"` fails to resolve under Turbopack's CSS
+   import resolver (it doesn't recognize this package's exports-map-only
+   "style" condition — a known Turbopack/Tailwind v4 gap as of Next 16.3).
+   A relative path bypasses package "exports" resolution entirely, since
+   it's a direct filesystem reference rather than a bare specifier. */
+@import "../../node_modules/tw-animate-css/dist/tw-animate.css";
 
+/* This app is permanently dark (no light theme/toggle) — pin the `dark:`
+   variant to an explicit `.dark` class that's never added to <html>,
+   instead of the Tailwind v4 default (OS `prefers-color-scheme`). This
+   keeps the small number of shadcn-internal `dark:` utilities (in
+   button.jsx/badge.jsx) permanently inactive and deterministic, rather
+   than flipping based on the visitor's OS setting. */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system — light content area + a permanently-dark navigational
+ * "dark panel" (the sidebar, and the login page's identity panel, which
+ * is conceptually the same fixed dark rail). Per explicit request: the
+ * main background/cards/text went light, the sidebar keeps its original
+ * dark navy styling untouched — so the two token groups below are
+ * intentionally decoupled (not derived from each other) rather than
+ * being light/dark variants of the same variables.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --radius: 1rem;
+
+  /* --- Light content tokens (background, cards, text, borders) --- */
+  --content-bg: #ffffff;
+  --content-surface: #f8fafc;
+  --content-surface-hover: #eef2f7;
+  --content-line: #e3e7f0;
+  --content-text-primary: #10182b;
+  --content-text-secondary: #5c6584;
+  --content-text-muted: #94a0bc;
+
+  /* --- Dark panel tokens (sidebar + login identity panel only —
+     unchanged from the original all-dark palette, kept dedicated so
+     they never get swept up in future content-theme edits) --- */
+  --dark-panel-bg: #171f35;
+  --dark-panel-bg-end: #10182b;
+  --dark-panel-hover: #1e2740;
+  --dark-panel-line: #2a3352;
+  --dark-panel-foreground: #f5f7fa;
+  --dark-panel-text-secondary: #8b95ac;
+
+  /* --- Accent colors, used identically on both the light content area
+     and the dark panel --- */
+  --accent-primary: #3b82f6;
+  --accent-success: #22d3a5;
+  --accent-danger: #f4634b;
+  --accent-warning: #f5b94d;
+
+  /* --- shadcn/ui token names: the light content tokens above, since
+     shadcn components (Card, Popover, Input, Table, ...) all render in
+     the main content area, never inside the sidebar. --- */
+  --background: var(--content-bg);
+  --foreground: var(--content-text-primary);
+  --card: var(--content-surface);
+  --card-foreground: var(--content-text-primary);
+  --popover: var(--content-surface);
+  --popover-foreground: var(--content-text-primary);
+  --primary: var(--accent-primary);
+  --primary-foreground: #ffffff;
+  --secondary: var(--content-surface-hover);
+  --secondary-foreground: var(--content-text-primary);
+  --muted: var(--content-surface-hover);
+  --muted-foreground: var(--content-text-secondary);
+  --accent: var(--content-surface-hover);
+  --accent-foreground: var(--content-text-primary);
+  --destructive: var(--accent-danger);
+  --border: var(--content-line);
+  --input: var(--content-surface-hover);
+  --ring: var(--accent-primary);
+
+  /* Sidebar tokens deliberately point at --dark-panel-* (not the
+     content tokens above) so the sidebar keeps its dark styling
+     regardless of the content theme. */
+  --sidebar: var(--dark-panel-bg);
+  --sidebar-foreground: var(--dark-panel-text-secondary);
+  --sidebar-primary: var(--accent-primary);
+  --sidebar-primary-foreground: var(--dark-panel-foreground);
+  --sidebar-accent: var(--dark-panel-hover);
+  --sidebar-accent-foreground: var(--accent-primary);
+  --sidebar-border: var(--dark-panel-line);
+  --sidebar-ring: var(--accent-primary);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Palette-specific utilities for the light content area: bg-surface,
+     bg-surface-hover, text-success, bg-success/15, text-warning,
+     bg-warning/15, text-danger, bg-danger/15, text-faint. */
+  --color-surface: var(--content-surface);
+  --color-surface-hover: var(--content-surface-hover);
+  --color-success: var(--accent-success);
+  --color-warning: var(--accent-warning);
+  --color-danger: var(--accent-danger);
+  --color-faint: var(--content-text-muted);
+
+  /* Dark-panel-specific utilities — only for the sidebar and the
+     login page's identity panel (see src/app/login/page.js). */
+  --color-dark-panel: var(--dark-panel-bg);
+  --color-dark-panel-end: var(--dark-panel-bg-end);
+  --color-dark-panel-hover: var(--dark-panel-hover);
+  --color-dark-panel-border: var(--dark-panel-line);
+  --color-dark-panel-foreground: var(--dark-panel-foreground);
+  --color-dark-panel-secondary: var(--dark-panel-text-secondary);
+
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  /* Tabular figures for stat numbers/tables, per the design system's
+     "angka sejajar rapi" requirement — use alongside font-mono where a
+     fully monospaced look is wanted, or alone to just align digits. */
+  .tabular-figures {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Print support for the document generator ("Cetak Preview") and any
+ * other #document-preview usage — hides the entire app shell (sidebar,
+ * navbar, form column, etc.) and prints only the official-document
+ * preview element, regardless of where it's mounted in the tree. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #document-preview,
+  #document-preview * {
+    visibility: visible;
+  }
+  #document-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+}
+
