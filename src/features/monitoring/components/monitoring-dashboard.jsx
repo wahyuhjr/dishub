@@ -15,6 +15,7 @@ import {
   COMPONENT_GROUP,
   HEALTH_GROUP,
 } from '@/lib/health/constants';
+import { RealtimeHealthChart } from './realtime-health-chart';
 
 const AUTO_REFRESH_INTERVAL_MS = 30_000;
 
@@ -37,6 +38,16 @@ function lastCheckedLabel(checkedAt) {
 }
 
 function HealthCard({ label, item }) {
+  // `formatDistanceToNow` depends on the current instant, so the server-
+  // rendered string ('1 menit yang lalu') and the client's first render
+  // during hydration ('kurang dari 1 menit yang lalu') can legitimately
+  // differ by a few seconds — a classic hydration mismatch. We render a
+  // stable placeholder for the very first client render (identical to
+  // what SSR produced isn't required here, only that both initial
+  // passes match), then swap in the real relative label after mount.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <Card className="p-4">
       <div className="flex items-start justify-between gap-2">
@@ -48,7 +59,9 @@ function HealthCard({ label, item }) {
       <p className="mt-2 font-mono text-xs tabular-nums text-muted-foreground">
         {item.latency_ms != null ? `${item.latency_ms}ms` : '—'}
       </p>
-      <p className="mt-1 text-xs text-muted-foreground">{lastCheckedLabel(item.checked_at)}</p>
+      <p className="mt-1 text-xs text-muted-foreground" suppressHydrationWarning>
+        {mounted ? lastCheckedLabel(item.checked_at) : '\u00A0'}
+      </p>
       {item.error_message ? <p className="mt-1 text-xs text-danger">{item.error_message}</p> : null}
     </Card>
   );
@@ -152,6 +165,8 @@ export function MonitoringDashboard({ initialSystemHealth, initialStationHealth,
           {canTriggerChecks ? 'Periksa Sekarang' : 'Muat Ulang'}
         </Button>
       </div>
+
+      <RealtimeHealthChart systemHealth={systemHealth} stationHealth={stationHealth} />
 
       {Object.entries(GROUP_LABELS).map(([group, groupLabel]) => (
         <div key={group}>

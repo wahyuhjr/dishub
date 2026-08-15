@@ -14,8 +14,8 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { can } from '@/lib/auth/permissions';
-import { MessageStatusBadge } from './status-badge';
-import { MESSAGE_TYPE_LABELS, PRIORITY_LABELS, availableActions } from '@/features/relay-news/status-machine';
+import { MessageStatusBadge, PriorityBadge } from './status-badge';
+import { MESSAGE_TYPE_LABELS, MESSAGE_TYPE_BADGE_CLASSNAMES, PRIORITY_LABELS, availableActions } from '@/features/relay-news/status-machine';
 
 function SortableHeader({ column, label }) {
   const router = useRouter();
@@ -54,38 +54,58 @@ export function RelayNewsTable({ rows, role, currentUserId }) {
     () => [
       {
         accessorKey: 'message_number',
+        size: 160,
         header: () => <SortableHeader column="message_number" label="No. Berita" />,
         cell: ({ row }) => (
-          <div className="flex flex-col">
-            <span className="font-medium">{row.original.message_number}</span>
-            <span className="text-xs text-muted-foreground">{MESSAGE_TYPE_LABELS[row.original.message_type]}</span>
+          <div className="flex flex-col gap-0.5">
+            <span className="font-medium tabular-nums">{row.original.message_number}</span>
+            <span className={`inline-flex w-fit items-center rounded-full border px-2 py-px text-xs font-medium ${MESSAGE_TYPE_BADGE_CLASSNAMES[row.original.message_type] ?? ''}`}>
+              {MESSAGE_TYPE_LABELS[row.original.message_type]}
+            </span>
           </div>
         ),
       },
       {
         accessorKey: 'title',
+        size: 280,
         header: 'Judul',
-        cell: ({ row }) => <span className="line-clamp-2 max-w-xs">{row.original.title}</span>,
+        cell: ({ row }) => (
+          <div className="max-w-[280px] truncate" title={row.original.title}>
+            {row.original.title}
+          </div>
+        ),
       },
       {
         accessorKey: 'received_at',
+        size: 160,
         header: () => <SortableHeader column="received_at" label="Diterima" />,
-        cell: ({ row }) => format(new Date(row.original.received_at), 'dd MMM yyyy HH:mm', { locale: idLocale }),
+        cell: ({ row }) => (
+          <span className="whitespace-nowrap text-muted-foreground">
+            {format(new Date(row.original.received_at), 'dd MMM yyyy HH:mm', { locale: idLocale })}
+          </span>
+        ),
       },
       {
         accessorKey: 'status',
+        size: 140,
         header: () => <SortableHeader column="status" label="Status" />,
         cell: ({ row }) => <MessageStatusBadge status={row.original.status} />,
       },
       {
         accessorKey: 'priority',
+        size: 110,
         header: () => <SortableHeader column="priority" label="Prioritas" />,
-        cell: ({ row }) => PRIORITY_LABELS[row.original.priority],
+        cell: ({ row }) => <PriorityBadge priority={row.original.priority} />,
       },
       {
         id: 'operator',
+        size: 140,
         header: 'Operator',
-        cell: ({ row }) => row.original.operator?.full_name || row.original.operator?.username || '—',
+        cell: ({ row }) => (
+          <div className="max-w-[140px] truncate text-muted-foreground" title={row.original.operator?.full_name || row.original.operator?.username}>
+            {row.original.operator?.full_name || row.original.operator?.username || '—'}
+          </div>
+        ),
       },
       {
         id: 'actions',
@@ -114,7 +134,7 @@ export function RelayNewsTable({ rows, role, currentUserId }) {
                 </Button>
               )}
               {actions.includes('relay') && (
-                <Button asChild size="sm">
+                <Button asChild size="sm" className="bg-accent-primary text-white hover:bg-accent-primary/90">
                   <Link href={`/dashboard/relay-news/${message.id}`} aria-label={`Relay berita ${message.message_number}`}>
                     Relay
                   </Link>
@@ -131,13 +151,16 @@ export function RelayNewsTable({ rows, role, currentUserId }) {
   const table = useReactTable({ data: rows, columns, getCoreRowModel: getCoreRowModel() });
 
   return (
-    <div className="overflow-hidden rounded-lg border">
+    <div className="overflow-hidden rounded-xl border bg-card">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  style={header.column.columnDef.size ? { width: header.column.columnDef.size } : undefined}
+                >
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}
@@ -155,7 +178,7 @@ export function RelayNewsTable({ rows, role, currentUserId }) {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
+              <TableCell colSpan={columns.length} className="py-16 text-center text-sm text-muted-foreground">
                 Tidak ada berita yang cocok dengan filter.
               </TableCell>
             </TableRow>

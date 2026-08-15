@@ -15,7 +15,7 @@ function fmt(dateString) {
 export function NtmTable({ rows }) {
   if (rows.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-16 text-center">
+      <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed py-16 text-center">
         <p className="text-sm font-medium text-foreground">Belum ada NTM yang cocok dengan filter ini.</p>
         <p className="text-sm text-muted-foreground">Coba ubah filter, atau buat NTM baru.</p>
       </div>
@@ -23,18 +23,18 @@ export function NtmTable({ rows }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border">
+    <div className="overflow-hidden rounded-xl border bg-card">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nomor NTM</TableHead>
-            <TableHead>Edisi</TableHead>
+            <TableHead className="w-[160px]">Nomor NTM</TableHead>
+            <TableHead className="w-[80px]">Edisi</TableHead>
             <TableHead>Judul</TableHead>
-            <TableHead>Jenis</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Terbit</TableHead>
-            <TableHead>Pembuat</TableHead>
-            <TableHead className="text-right">Aksi</TableHead>
+            <TableHead className="w-[120px]">Jenis</TableHead>
+            <TableHead className="w-[130px]">Status</TableHead>
+            <TableHead className="w-[130px]">Terbit</TableHead>
+            <TableHead className="w-[140px]">Pembuat</TableHead>
+            <TableHead className="w-px text-right">Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -42,22 +42,35 @@ export function NtmTable({ rows }) {
             <TableRow key={row.id}>
               <TableCell className="font-mono text-sm tabular-nums">
                 {row.ntm_number}
-                {row.revision_number > 1 ? <span className="ml-1 text-xs text-muted-foreground">rev.{row.revision_number}</span> : null}
+                {row.revision_number > 1 ? (
+                  <span className="ml-1 text-xs text-muted-foreground">rev.{row.revision_number}</span>
+                ) : null}
               </TableCell>
-              <TableCell>{row.edition || '—'}</TableCell>
-              <TableCell className="max-w-64 truncate">{row.title}</TableCell>
-              <TableCell>{NTM_DOCUMENT_TYPE_LABELS[row.document_type] ?? row.document_type}</TableCell>
+              <TableCell className="text-muted-foreground">{row.edition || '—'}</TableCell>
+              <TableCell>
+                <div className="max-w-[260px] truncate" title={row.title}>{row.title}</div>
+              </TableCell>
+              <TableCell className="text-muted-foreground">
+                {NTM_DOCUMENT_TYPE_LABELS[row.document_type] ?? row.document_type}
+              </TableCell>
               <TableCell>
                 <NtmStatusBadge status={row.status} />
               </TableCell>
-              <TableCell>{fmt(row.published_at)}</TableCell>
-              <TableCell>{row.creator?.full_name ?? row.creator?.username ?? '—'}</TableCell>
+              <TableCell className="whitespace-nowrap text-muted-foreground">{fmt(row.published_at)}</TableCell>
+              <TableCell>
+                <div
+                  className="max-w-[140px] truncate text-muted-foreground"
+                  title={row.creator?.full_name ?? row.creator?.username}
+                >
+                  {row.creator?.full_name ?? row.creator?.username ?? '—'}
+                </div>
+              </TableCell>
               <TableCell>
                 <div className="flex items-center justify-end gap-1">
                   <Link
                     href={`/dashboard/ntm/${row.id}`}
                     aria-label={`Lihat detail NTM ${row.ntm_number}`}
-                    className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
+                    className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
                     <Eye className="size-4" aria-hidden="true" />
                   </Link>
@@ -65,7 +78,7 @@ export function NtmTable({ rows }) {
                     <Link
                       href={`/dashboard/ntm/${row.id}/edit`}
                       aria-label={`Ubah NTM ${row.ntm_number}`}
-                      className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface-hover hover:text-foreground"
+                      className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                       <Pencil className="size-4" aria-hidden="true" />
                     </Link>

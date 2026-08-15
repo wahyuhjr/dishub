@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -45,6 +45,12 @@ function toFormData(values) {
 export function MessageForm({ stations, mode = 'create', messageId, initialValues }) {
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState(null);
+  // `isPending` only flips the disabled attribute after React re-renders,
+  // which is too slow to stop a rapid double-click/double-tap from firing
+  // the Server Action twice (e.g. creating the message row twice). This
+  // ref is set synchronously inside the click handler, before any render,
+  // so the second click is rejected immediately regardless of render timing.
+  const submittingRef = useRef(false);
 
   const form = useForm({
     resolver: zodResolver(messageFormSchema),
@@ -53,15 +59,21 @@ export function MessageForm({ stations, mode = 'create', messageId, initialValue
 
   function submit(action) {
     return form.handleSubmit((values) => {
+      if (submittingRef.current) return;
+      submittingRef.current = true;
       setServerError(null);
       startTransition(async () => {
-        const formData = toFormData(values);
-        const result = mode === 'edit' ? await action(messageId, formData) : await action(undefined, formData);
-        if (result?.error) {
-          setServerError(result.error);
+        try {
+          const formData = toFormData(values);
+          const result = mode === 'edit' ? await action(messageId, formData) : await action(undefined, formData);
+          if (result?.error) {
+            setServerError(result.error);
+          }
+          // On success these actions redirect() server-side, which throws
+          // and navigates away — nothing else to do here.
+        } finally {
+          submittingRef.current = false;
         }
-        // On success these actions redirect() server-side, which throws
-        // and navigates away — nothing else to do here.
       });
     });
   }

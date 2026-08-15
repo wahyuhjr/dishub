@@ -30,7 +30,7 @@
   --content-bg: #ffffff;
   --content-surface: #f8fafc;
   --content-surface-hover: #eef2f7;
-  --content-line: #e3e7f0;
+  --content-line: #d0d7e8;        /* ↑ was #e3e7f0 — slightly stronger border */
   --content-text-primary: #10182b;
   --content-text-secondary: #5c6584;
   --content-text-muted: #94a0bc;

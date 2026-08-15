@@ -58,13 +58,14 @@ export const STATUS_LABELS = {
  *  low opacity + matching text color) instead of solid light-mode colors, so
  *  status badges read correctly on the dark surface background (see globals.css). */
 export const STATUS_BADGE_CLASSNAMES = {
-  DRAFT: 'bg-surface-hover text-muted-foreground',
-  PENDING_VERIFICATION: 'bg-warning/15 text-warning',
-  VERIFIED: 'bg-primary/15 text-primary',
-  RELAYING: 'bg-primary/15 text-primary',
-  RELAYED: 'bg-success/15 text-success',
-  FAILED: 'bg-danger/15 text-danger',
-  ARCHIVED: 'bg-surface-hover text-faint',
+  DRAFT:                'border-border       bg-muted/60          text-muted-foreground',
+  PENDING_VERIFICATION: 'border-warning/40   bg-warning/10        text-warning',
+  VERIFIED:             'border-primary/40   bg-primary/10        text-primary',
+  RELAYING:             'border-primary/60   bg-primary/15        text-primary      animate-pulse',
+  RELAYED:              'border-success/40   bg-success/10        text-success',
+  FAILED:               'border-danger/40    bg-danger/10         text-danger',
+  DELAYED:              'border-warning/60   bg-warning/15        text-warning',
+  ARCHIVED:             'border-border       bg-surface-hover     text-faint',
 };
 
 export const MESSAGE_TYPE_LABELS = {
@@ -93,6 +94,13 @@ export const PRIORITY_LABELS = {
   NORMAL: 'Normal',
   HIGH: 'Tinggi',
   CRITICAL: 'Kritis',
+};
+
+export const PRIORITY_BADGE_CLASSNAMES = {
+  LOW:      'border-slate-300  bg-slate-100   text-slate-500',
+  NORMAL:   'border-blue-300   bg-blue-50     text-blue-700',
+  HIGH:     'border-amber-300  bg-amber-50    text-amber-700',
+  CRITICAL: 'border-red-400    bg-red-50      text-red-700 font-semibold',
 };
 
 /**

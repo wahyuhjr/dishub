@@ -1,5 +1,6 @@
-import { RadioTower } from 'lucide-react';
-import LoginForm from './login-form';
+import { RadioTower } from "lucide-react";
+import LoginForm from "./login-form";
+import Image from "next/image";
 
 // Public route (see proxy.js PUBLIC_PATHS). Two-column layout: a
 // permanently-dark institutional identity panel on the left (same
@@ -14,19 +15,15 @@ export default function LoginPage() {
           className="absolute inset-0 opacity-40"
           style={{
             backgroundImage:
-              'radial-gradient(circle at 50% 40%, rgba(59,130,246,0.25), transparent 60%)',
+              "radial-gradient(circle at 50% 40%, rgba(59,130,246,0.25), transparent 60%)",
           }}
           aria-hidden="true"
         />
 
         <div className="relative flex flex-col items-center gap-6 text-center">
-          <span
-            className="flex size-20 items-center justify-center rounded-full bg-primary/15 text-primary shadow-[0_0_60px_rgba(59,130,246,0.35)]"
-            aria-hidden="true"
-          >
-            <RadioTower className="size-10" />
-          </span>
-
+          <div className="flex items-center gap-4">
+            <Image src="/dishub.svg" alt="" width={120} height={120} />
+          </div>
           <div>
             <p className="text-xs font-semibold tracking-widest text-dark-panel-secondary uppercase">
               Kementerian Perhubungan
@@ -47,12 +44,18 @@ export default function LoginPage() {
             <h1 className="text-lg font-semibold tracking-tight text-foreground">
               Digital Relay Berita Bahaya
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">Notice To Marine &middot; Distrik Navigasi Merauke</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Notice To Marine &middot; Distrik Navigasi Merauke
+            </p>
           </div>
 
           <div className="mb-6 hidden text-center lg:block">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground">Masuk ke Akun Anda</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Gunakan kredensial internal Anda untuk melanjutkan.</p>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Masuk ke Akun Anda
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Gunakan kredensial internal Anda untuk melanjutkan.
+            </p>
           </div>
 
           <div className="rounded-2xl border border-border/60 bg-surface p-8">

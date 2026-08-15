@@ -15,19 +15,6 @@ function isPublicPath(pathname) {
   return PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 }
 
-/**
- * Next.js 16 renamed `middleware.js` to `proxy.js` (same mechanism).
- *
- * This performs an OPTIMISTIC check only: does a Supabase session cookie
- * exist? It intentionally does NOT query public.profiles for the role,
- * since proxy runs on every request (including prefetches) and Next.js
- * explicitly recommends avoiding database checks here for performance.
- *
- * The AUTHORITATIVE, database-backed role check happens in
- * requireRole()/requireAnyRole() (src/lib/auth/guards.js) inside every
- * page, layout, Server Action, and Route Handler — never rely on proxy
- * alone to protect data.
- */
 export async function proxy(request) {
   const { pathname } = request.nextUrl;
   const { response, user } = await updateSupabaseSession(request);

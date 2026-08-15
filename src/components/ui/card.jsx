@@ -11,7 +11,7 @@ function Card({ className, ...props }) {
     <div
       data-slot="card"
       className={cn(
-        "rounded-2xl border border-border/60 bg-card text-card-foreground",
+        "rounded-xl border border-border bg-card text-card-foreground",
         className
       )}
       {...props}

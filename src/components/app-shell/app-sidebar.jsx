@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Anchor } from 'lucide-react';
+import Image from 'next/image';
 import { NAV_ITEMS, NAV_GROUP_LABELS } from '@/config/navigation';
 import {
   Sidebar,
@@ -17,21 +17,6 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 
-/**
- * Sidebar navigation. Filters NAV_ITEMS by `role` (a plain string from
- * the server-verified session, see app-shell.jsx) right here in the
- * Client Component — NAV_ITEMS (which includes lucide-react icon
- * component references) must NOT be pre-filtered and passed down as a
- * prop from a Server Component, since component references aren't
- * serializable across that boundary. The menu still can never show
- * something the user's role isn't already allowed to do, since
- * NAV_ITEMS' `roles` arrays come straight from permissions.js.
- *
- * Items are grouped ("Menu Utama" / "Akun", see NAV_GROUP_LABELS) and
- * the active item gets a left accent border + primary-colored icon/text
- * on top of the shared sidebar-accent background, per the dark
- * minimalist design system.
- */
 export function AppSidebar({ role }) {
   const pathname = usePathname();
   const visibleItems = NAV_ITEMS.filter((item) => item.roles.includes(role));
@@ -48,12 +33,7 @@ export function AppSidebar({ role }) {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-1.5">
-          <span
-            className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground"
-            aria-hidden="true"
-          >
-            <Anchor className="size-4" />
-          </span>
+            <Image src="/logo1.svg" alt="" width={40} height={40} />
           <span className="truncate text-sm font-semibold group-data-[collapsible=icon]:hidden">
             Relay &amp; NTM
           </span>
@@ -69,7 +49,9 @@ export function AppSidebar({ role }) {
             <SidebarGroupContent>
               <SidebarMenu aria-label={group.label}>
                 {group.items.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  const isActive =
+                    pathname === item.href ||
+                    (item.href !== '/dashboard' && pathname.startsWith(`${item.href}/`));
                   const Icon = item.icon;
 
                   return (

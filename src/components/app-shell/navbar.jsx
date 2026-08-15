@@ -1,27 +1,9 @@
 import { Anchor, Bell, Search } from 'lucide-react';
+import Image from 'next/image';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Breadcrumbs } from './breadcrumbs';
 import { UserMenu } from './user-menu';
 
-/**
- * Navbar: Kemenhub logo, system name, breadcrumb, a decorative search
- * bar, a notification bell, and the user profile dropdown. Server
- * Component — the interactive bits (SidebarTrigger, Breadcrumbs,
- * UserMenu) are themselves Client Components, composed here.
- *
- * Background matches the page body (bg-background, no border) per the
- * dark minimalist design system — layers are told apart by tone, not by
- * hard borders.
- *
- * NOTE: the search bar and notification bell are presentational only —
- * there is no global search or notifications backend yet. Wire them up
- * once those features exist rather than faking behavior here.
- *
- * NOTE: the official Kemenhub logo image isn't bundled in this repo (no
- * license to redistribute it here) — replace the placeholder mark below
- * with `public/logo-kemenhub.svg` (via next/image) once the asset is
- * available.
- */
 export function Navbar({ user }) {
   return (
     <header className="flex h-16 shrink-0 items-center gap-3 bg-background px-4 md:px-6">
@@ -29,13 +11,7 @@ export function Navbar({ user }) {
 
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <div className="hidden shrink-0 items-center gap-2 lg:flex">
-          <span
-            className="flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground"
-            role="img"
-            aria-label="Logo Kementerian Perhubungan"
-          >
-            <Anchor className="size-4" aria-hidden="true" />
-          </span>
+          <Image src="/dishub.svg" alt="" width={32} height={32} />
           <span className="hidden text-sm font-semibold sm:inline">
             Digital Relay Berita Bahaya &amp; NTM
           </span>
