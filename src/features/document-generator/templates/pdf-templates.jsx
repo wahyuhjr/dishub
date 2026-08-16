@@ -1,7 +1,12 @@
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import path from 'node:path';
+import { Document, Page, View, Text, Image, StyleSheet } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import { CATEGORY_DOCUMENT_TITLES, CATEGORY_PRIORITY_NOTE } from '../categories';
+
+// Institutional logos placed top-left/top-right of every generated document.
+const LOGO_LEFT_PATH = path.join(process.cwd(), 'public', 'dishub.svg');
+const LOGO_RIGHT_PATH = path.join(process.cwd(), 'public', 'logo1.svg');
 
 /**
  * Server-only PDF templates (@react-pdf/renderer primitives — Document/
@@ -25,7 +30,9 @@ const ACCENT_COLORS = {
 
 const styles = StyleSheet.create({
   page: { padding: 40, fontSize: 10, fontFamily: 'Helvetica', color: '#111827' },
-  headerBar: { borderBottom: 2, paddingBottom: 10, marginBottom: 16 },
+  headerBar: { borderBottom: 2, paddingBottom: 10, marginBottom: 16, flexDirection: 'row', alignItems: 'center' },
+  headerLogo: { width: 48, height: 48 },
+  headerText: { flex: 1, marginHorizontal: 12, textAlign: 'center' },
   agency: { fontSize: 9, color: '#4B5563', textTransform: 'uppercase', letterSpacing: 1 },
   title: { fontSize: 16, fontWeight: 700, marginTop: 4 },
   priorityNote: { fontSize: 9, fontWeight: 700, marginTop: 4, textTransform: 'uppercase' },
@@ -67,9 +74,13 @@ function OfficialDocumentLayout({ category, data }) {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={[styles.headerBar, { borderBottomColor: accent }]}>
-          <Text style={styles.agency}>Distrik Navigasi Tipe A Kelas III Merauke — Kementerian Perhubungan</Text>
-          <Text style={[styles.title, { color: accent }]}>{CATEGORY_DOCUMENT_TITLES[category]}</Text>
-          <Text style={[styles.priorityNote, { color: accent }]}>{CATEGORY_PRIORITY_NOTE[category]}</Text>
+          <Image src={LOGO_LEFT_PATH} style={styles.headerLogo} />
+          <View style={styles.headerText}>
+            <Text style={styles.agency}>Distrik Navigasi Tipe A Kelas III Merauke — Kementerian Perhubungan</Text>
+            <Text style={[styles.title, { color: accent }]}>{CATEGORY_DOCUMENT_TITLES[category]}</Text>
+            <Text style={[styles.priorityNote, { color: accent }]}>{CATEGORY_PRIORITY_NOTE[category]}</Text>
+          </View>
+          <Image src={LOGO_RIGHT_PATH} style={styles.headerLogo} />
         </View>
 
         <MetaRow label="Nomor Berita" value={data.message_number} />

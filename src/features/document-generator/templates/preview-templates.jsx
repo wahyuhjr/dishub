@@ -45,12 +45,18 @@ export function OfficialDocumentPreview({ category, data }) {
 
   return (
     <div id="document-preview" className="mx-auto w-full max-w-[210mm] bg-white p-10 text-zinc-900 print:p-0 print:shadow-none">
-      <div className={`border-b-2 pb-3 ${accent}`}>
-        <p className="text-xs tracking-widest text-zinc-500 uppercase">
-          Distrik Navigasi Tipe A Kelas III Merauke — Kementerian Perhubungan
-        </p>
-        <h1 className="mt-1 text-xl font-bold">{CATEGORY_DOCUMENT_TITLES[category] ?? 'BERITA BAHAYA'}</h1>
-        <p className="mt-1 text-xs font-bold tracking-wide uppercase">{CATEGORY_PRIORITY_NOTE[category]}</p>
+      <div className={`flex items-center gap-3 border-b-2 pb-3 ${accent}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/dishub.svg" alt="" aria-hidden="true" className="size-12 shrink-0" />
+        <div className="flex-1 text-center">
+          <p className="text-xs tracking-widest text-zinc-500 uppercase">
+            Distrik Navigasi Tipe A Kelas III Merauke — Kementerian Perhubungan
+          </p>
+          <h1 className="mt-1 text-xl font-bold">{CATEGORY_DOCUMENT_TITLES[category] ?? 'BERITA BAHAYA'}</h1>
+          <p className="mt-1 text-xs font-bold tracking-wide uppercase">{CATEGORY_PRIORITY_NOTE[category]}</p>
+        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo1.svg" alt="" aria-hidden="true" className="size-12 shrink-0" />
       </div>
 
       <dl className="mt-4 divide-y divide-zinc-100">
