@@ -59,7 +59,7 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-blue-600 to-blue-400 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-linear-to-r hover:from-blue-700 hover:to-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <KeyRound className="size-4" aria-hidden="true" />
         {pending ? 'Memproses…' : 'Masuk'}
