@@ -130,6 +130,9 @@ export function availableActions({ status, role, isOwner }) {
   if (status === 'RELAYED' && can(role, 'messages.archive_relayed')) {
     actions.push('archive');
   }
+  if (status === 'RELAYED' && can(role, 'messages.delete')) {
+    actions.push('delete');
+  }
 
   return actions;
 }

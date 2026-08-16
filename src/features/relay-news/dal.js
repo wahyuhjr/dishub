@@ -108,3 +108,49 @@ export async function listOperatorsForFilter() {
   if (error) throw error;
   return data ?? [];
 }
+
+export const PUBLIC_PAGE_SIZE = 12;
+
+const PUBLIC_LIST_SELECT = `
+  id, message_number, message_type, title, content, received_at, relayed_at,
+  location_description, status, priority
+`;
+
+/**
+ * Public homepage ("/") list — no auth required. Relies entirely on the
+ * `maritime_messages_select_public` RLS policy (anon role) to keep
+ * DRAFT/PENDING_VERIFICATION rows hidden; this query itself has no
+ * status filter, but createSupabaseServerClient() here runs unauthenticated
+ * so Postgres enforces the boundary regardless of what this code does.
+ * Only non-sensitive columns are selected — no operator/verifier identity,
+ * no coordinates.
+ */
+export async function listPublicMessages({ page = 1 } = {}) {
+  const supabase = await createSupabaseServerClient();
+  const safePage = Math.max(1, Number(page) || 1);
+  const from = (safePage - 1) * PUBLIC_PAGE_SIZE;
+  const to = from + PUBLIC_PAGE_SIZE - 1;
+
+  const { data, error, count } = await supabase
+    .from('maritime_messages')
+    .select(PUBLIC_LIST_SELECT, { count: 'exact' })
+    .order('received_at', { ascending: false })
+    .range(from, to);
+  if (error) throw error;
+
+  return { rows: data ?? [], total: count ?? 0, page: safePage, pageSize: PUBLIC_PAGE_SIZE };
+}
+
+/** Public detail page ("/berita/[id]") — same RLS boundary as listPublicMessages(). */
+export async function getPublicMessageById(id) {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from('maritime_messages')
+    .select(
+      'id, message_number, message_type, title, content, received_at, relayed_at, location_description, status, priority'
+    )
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}

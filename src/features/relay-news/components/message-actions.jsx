@@ -24,6 +24,7 @@ import {
   markMessageFailedAction,
   relayMessageAction,
   archiveMessageAction,
+  deleteMessageAction,
 } from '@/features/relay-news/actions';
 import { availableActions } from '@/features/relay-news/status-machine';
 
@@ -52,6 +53,21 @@ export function MessageActions({ message, stations, role, currentUserId }) {
         return;
       }
       if (successMessage) toast.success(successMessage);
+      router.refresh();
+    });
+  }
+
+  function runDelete() {
+    setError(null);
+    startTransition(async () => {
+      const result = await deleteMessageAction(message.id);
+      if (result?.error) {
+        setError(result.error);
+        toast.error(result.error);
+        return;
+      }
+      toast.success('Berita berhasil dihapus.');
+      router.push('/dashboard/relay-news');
       router.refresh();
     });
   }
@@ -167,6 +183,29 @@ export function MessageActions({ message, stations, role, currentUserId }) {
                 <AlertDialogAction onClick={() => run(() => archiveMessageAction(message.id), 'Berita berhasil diarsipkan.')}>
                   Ya, Arsipkan
                 </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+
+        {actions.includes('delete') && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" disabled={isPending}>
+                Hapus
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Hapus berita ini secara permanen?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tindakan ini tidak dapat dibatalkan. Berita beserta riwayat relay-nya akan dihapus permanen dari
+                  database. Gunakan Archive jika Anda hanya ingin menyembunyikannya dari alur kerja aktif.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Batal</AlertDialogCancel>
+                <AlertDialogAction onClick={runDelete}>Ya, Hapus Permanen</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

@@ -5,14 +5,16 @@ import { updateSupabaseSession } from '@/lib/supabase/middleware';
  * Routes reachable without an authenticated session.
  * Per the requirement, ONLY these (plus their sub-paths, e.g. error
  * variants under /auth/*) are public:
+ *   - / (public homepage — card list of published berita)
+ *   - /berita/[id] (public berita detail page)
  *   - /login
  *   - /auth/callback
  *   - the authentication error page(s) under /auth/*
  */
-const PUBLIC_PATHS = ['/login', '/auth'];
+const PUBLIC_PATHS = ['/', '/berita', '/login', '/auth'];
 
 function isPublicPath(pathname) {
-  return PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+  return PUBLIC_PATHS.some((path) => pathname === path || (path !== '/' && pathname.startsWith(`${path}/`)));
 }
 
 export async function proxy(request) {

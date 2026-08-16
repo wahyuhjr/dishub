@@ -200,3 +200,53 @@ export async function archiveMessageAction(messageId) {
   revalidatePath(`/dashboard/relay-news/${id}`);
   return { success: true, data };
 }
+
+/**
+ * Hard delete of a RELAYED message. ADMIN-only (see permissions.js
+ * "messages.delete" + the maritime_messages_delete_admin RLS policy,
+ * which is the real enforcement boundary — this action's role check is
+ * only for UX/fail-fast). Exceptional/irreversible: the normal lifecycle
+ * for every other role is ARCHIVED, never a physical delete. Only
+ * RELAYED messages may be deleted this way (see status-machine.js
+ * availableActions) — anything earlier in the workflow should be
+ * archived instead so its audit trail (relay_attempts, activity_logs)
+ * stays meaningful.
+ */
+export async function deleteMessageAction(messageId) {
+  const admin = await requireAnyRole(rolesFor('messages.delete'));
+  const id = messageIdSchema.parse(messageId);
+
+  const supabase = await createSupabaseServerClient();
+
+  // Capture identity for the audit log BEFORE the row disappears, and
+  // confirm it is actually RELAYED — the RLS policy would still reject
+  // this for any role but ADMIN, but this extra check keeps the audit
+  // trail accurate and gives a clearer error than a generic RLS denial.
+  const { data: target } = await supabase
+    .from('maritime_messages')
+    .select('message_number, title, status')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (!target) return { error: 'Berita tidak ditemukan.' };
+  if (target.status !== 'RELAYED') {
+    return { error: 'Hanya berita berstatus RELAYED yang dapat dihapus.' };
+  }
+
+  const { error } = await supabase.from('maritime_messages').delete().eq('id', id);
+  if (error) return { error: error.message };
+
+  const ctx = await getRequestContext();
+  await supabase.from('activity_logs').insert({
+    actor_id: admin.id,
+    action: 'DELETE_MESSAGE',
+    entity_type: 'maritime_messages',
+    entity_id: id,
+    metadata: { message_number: target.message_number, title: target.title },
+    ip_address: ctx?.ipAddress ?? null,
+    user_agent: ctx?.userAgent ?? null,
+  });
+
+  revalidatePath('/dashboard/relay-news');
+  return { success: true };
+}

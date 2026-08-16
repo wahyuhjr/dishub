@@ -250,7 +250,7 @@ export function MessageForm({ stations, mode = 'create', messageId, initialValue
               <FormItem>
                 <FormLabel>Latitude</FormLabel>
                 <FormControl>
-                  <Input placeholder="cth. -8.4999 atau 8°29'59.6\"S" {...field} />
+                  <Input placeholder="cth. -8.4999 atau 8°29'59.6″S" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -264,7 +264,7 @@ export function MessageForm({ stations, mode = 'create', messageId, initialValue
               <FormItem>
                 <FormLabel>Longitude</FormLabel>
                 <FormControl>
-                  <Input placeholder="cth. 140.4010 atau 140°24'03.6\"E" {...field} />
+                  <Input placeholder="cth. 140.4010 atau 140°24'03.6″E" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
