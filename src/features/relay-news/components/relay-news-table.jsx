@@ -59,9 +59,9 @@ export function RelayNewsTable({ rows, role, currentUserId }) {
         cell: ({ row }) => (
           <div className="flex flex-col gap-0.5">
             <span className="font-medium tabular-nums">{row.original.message_number}</span>
-            <span className={`inline-flex w-fit items-center rounded-full border px-2 py-px text-xs font-medium ${MESSAGE_TYPE_BADGE_CLASSNAMES[row.original.message_type] ?? ''}`}>
+            {/* <span className={`inline-flex w-fit items-center rounded-full border px-2 py-px text-xs font-medium ${MESSAGE_TYPE_BADGE_CLASSNAMES[row.original.message_type] ?? ''}`}>
               {MESSAGE_TYPE_LABELS[row.original.message_type]}
-            </span>
+            </span> */}
           </div>
         ),
       },
