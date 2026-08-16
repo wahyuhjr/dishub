@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,14 +42,16 @@ export function MessageActions({ message, stations, role, currentUserId }) {
 
   const actions = availableActions({ status: message.status, role, isOwner: message.operator?.id === currentUserId });
 
-  function run(promiseFactory) {
+  function run(promiseFactory, successMessage) {
     setError(null);
     startTransition(async () => {
       const result = await promiseFactory();
       if (result?.error) {
         setError(result.error);
+        toast.error(result.error);
         return;
       }
+      if (successMessage) toast.success(successMessage);
       router.refresh();
     });
   }
@@ -63,13 +66,13 @@ export function MessageActions({ message, stations, role, currentUserId }) {
 
       <div className="flex flex-wrap gap-2">
         {actions.includes('submit_for_verification') && (
-          <Button disabled={isPending} onClick={() => run(() => submitForVerificationAction(message.id))}>
+          <Button disabled={isPending} onClick={() => run(() => submitForVerificationAction(message.id), 'Berita diajukan untuk verifikasi.')}>
             Submit for Verification
           </Button>
         )}
 
         {actions.includes('verify') && (
-          <Button disabled={isPending} onClick={() => run(() => verifyMessageAction(message.id))}>
+          <Button disabled={isPending} onClick={() => run(() => verifyMessageAction(message.id), 'Berita berhasil diverifikasi.')}>
             Verify
           </Button>
         )}
@@ -95,7 +98,7 @@ export function MessageActions({ message, stations, role, currentUserId }) {
               <AlertDialogFooter>
                 <AlertDialogCancel>Batal</AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={() => run(() => markMessageFailedAction({ message_id: message.id, reason: failReason }))}
+                  onClick={() => run(() => markMessageFailedAction({ message_id: message.id, reason: failReason }), 'Berita ditandai gagal.')}
                 >
                   Ya, Tandai Gagal
                 </AlertDialogAction>
@@ -136,7 +139,7 @@ export function MessageActions({ message, stations, role, currentUserId }) {
                 <AlertDialogCancel>Batal</AlertDialogCancel>
                 <AlertDialogAction
                   disabled={!stationId}
-                  onClick={() => run(() => relayMessageAction({ message_id: message.id, station_id: stationId }))}
+                  onClick={() => run(() => relayMessageAction({ message_id: message.id, station_id: stationId }), 'Berita berhasil di-relay.')}
                 >
                   Ya, Relay Sekarang
                 </AlertDialogAction>
@@ -161,7 +164,7 @@ export function MessageActions({ message, stations, role, currentUserId }) {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Batal</AlertDialogCancel>
-                <AlertDialogAction onClick={() => run(() => archiveMessageAction(message.id))}>
+                <AlertDialogAction onClick={() => run(() => archiveMessageAction(message.id), 'Berita berhasil diarsipkan.')}>
                   Ya, Arsipkan
                 </AlertDialogAction>
               </AlertDialogFooter>

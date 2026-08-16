@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { downloadNtmDocumentAction } from '@/features/ntm/actions';
+import { toast } from 'sonner';
 
 /**
  * Preview + download panel for an NTM's attached document. Both actions
@@ -39,6 +40,7 @@ export function NtmDocumentPanel({ ntm }) {
       const result = await downloadNtmDocumentAction(ntm.id);
       if (result?.error) {
         setError(result.error);
+        toast.error(result.error);
         return;
       }
       onReady(result.data.signedUrl);

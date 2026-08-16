@@ -1,6 +1,7 @@
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
 
 // Inter: modern sans-serif for the dark minimalist design system (see
 // globals.css). Geist Mono is kept for tabular stat numbers (`font-mono`).
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col">
         <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+        <Toaster />
       </body>
     </html>
   );

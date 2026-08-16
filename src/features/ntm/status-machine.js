@@ -49,11 +49,11 @@ export const NTM_STATUS_BADGE_CLASSNAMES = {
 };
 
 export const NTM_DOCUMENT_TYPE_LABELS = {
-  PERMANENT: 'Permanent',
-  TEMPORARY: 'Temporary',
-  PRELIMINARY: 'Preliminary',
-  AMENDMENT: 'Amendment',
-  CANCELLATION: 'Cancellation',
+ PERMANENT: 'Permanen',
+TEMPORARY: 'Sementara',
+PRELIMINARY: 'Pendahuluan',
+AMENDMENT: 'Perubahan',
+CANCELLATION: 'Pembatalan',
 };
 
 /**

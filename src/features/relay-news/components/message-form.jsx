@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { messageFormSchema } from '@/features/relay-news/schema';
 import { MESSAGE_TYPE_LABELS, PRIORITY_LABELS } from '@/features/relay-news/status-machine';
 import { saveDraftAction, createAndSubmitForVerificationAction, updateDraftMessageAction } from '@/features/relay-news/actions';
+import { toast } from 'sonner';
 
 const DEFAULT_VALUES = {
   message_number: '',
@@ -68,6 +69,7 @@ export function MessageForm({ stations, mode = 'create', messageId, initialValue
           const result = mode === 'edit' ? await action(messageId, formData) : await action(undefined, formData);
           if (result?.error) {
             setServerError(result.error);
+            toast.error(result.error);
           }
           // On success these actions redirect() server-side, which throws
           // and navigates away — nothing else to do here.
@@ -248,7 +250,7 @@ export function MessageForm({ stations, mode = 'create', messageId, initialValue
               <FormItem>
                 <FormLabel>Latitude</FormLabel>
                 <FormControl>
-                  <Input inputMode="decimal" placeholder="-8.4999" {...field} />
+                  <Input placeholder="cth. -8.4999 atau 8°29'59.6\"S" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -262,7 +264,7 @@ export function MessageForm({ stations, mode = 'create', messageId, initialValue
               <FormItem>
                 <FormLabel>Longitude</FormLabel>
                 <FormControl>
-                  <Input inputMode="decimal" placeholder="140.4010" {...field} />
+                  <Input placeholder="cth. 140.4010 atau 140°24'03.6\"E" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

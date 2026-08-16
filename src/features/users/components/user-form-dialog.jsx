@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ROLE_VALUES } from '@/features/users/schema';
 import { ROLE_LABELS } from './user-filters';
 import { createUserAction, updateUserAction } from '@/features/users/actions';
+import { toast } from 'sonner';
 
 /**
  * Add/Edit user dialog. On create, the Server Action provisions the Auth
@@ -44,8 +45,14 @@ function UserFormBody({ isEdit, user, onOpenChange }) {
   const [isActive, setIsActive] = useState(user?.is_active ?? true);
 
   useEffect(() => {
-    if (state?.success) onOpenChange(false);
-  }, [state, onOpenChange]);
+    if (state?.success) {
+      toast.success(isEdit ? 'User berhasil diperbarui.' : 'User baru berhasil dibuat.');
+      onOpenChange(false);
+    } else if (state?.error) {
+      toast.error(state.error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">

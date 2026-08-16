@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,14 +46,16 @@ export function NtmActions({ ntm, role, currentUserId }) {
     hasDocument: Boolean(ntm.file_path),
   });
 
-  function run(promiseFactory) {
+  function run(promiseFactory, successMessage) {
     setError(null);
     startTransition(async () => {
       const result = await promiseFactory();
       if (result?.error) {
         setError(result.error);
+        toast.error(result.error);
         return;
       }
+      if (successMessage) toast.success(successMessage);
       router.refresh();
     });
   }
@@ -67,7 +70,9 @@ export function NtmActions({ ntm, role, currentUserId }) {
       const result = await uploadNtmDocumentAction(ntm.id, formData);
       if (result?.error) {
         setError(result.error);
+        toast.error(result.error);
       } else {
+        toast.success('Dokumen berhasil diunggah.');
         router.refresh();
       }
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -84,13 +89,13 @@ export function NtmActions({ ntm, role, currentUserId }) {
 
       <div className="flex flex-wrap gap-2">
         {actions.includes('submit_for_verification') && (
-          <Button disabled={isPending} onClick={() => run(() => submitNtmForVerificationAction(ntm.id))}>
+          <Button disabled={isPending} onClick={() => run(() => submitNtmForVerificationAction(ntm.id), 'NTM diajukan untuk verifikasi.')}>
             Submit untuk Verifikasi
           </Button>
         )}
 
         {actions.includes('verify') && (
-          <Button disabled={isPending} onClick={() => run(() => verifyNtmAction(ntm.id))}>
+          <Button disabled={isPending} onClick={() => run(() => verifyNtmAction(ntm.id), 'NTM berhasil diverifikasi.')}>
             Verifikasi
           </Button>
         )}
@@ -127,7 +132,7 @@ export function NtmActions({ ntm, role, currentUserId }) {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Batal</AlertDialogCancel>
-                <AlertDialogAction onClick={() => run(() => publishNtmAction(ntm.id))}>Ya, Publikasikan</AlertDialogAction>
+                <AlertDialogAction onClick={() => run(() => publishNtmAction(ntm.id), 'NTM berhasil dipublikasikan.')}>Ya, Publikasikan</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -150,7 +155,7 @@ export function NtmActions({ ntm, role, currentUserId }) {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Batal</AlertDialogCancel>
-                <AlertDialogAction onClick={() => run(() => createNtmRevisionAction(ntm.id))}>
+                <AlertDialogAction onClick={() => run(() => createNtmRevisionAction(ntm.id), 'Revisi baru berhasil dibuat.')}>
                   Ya, Buat Revisi
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -174,7 +179,7 @@ export function NtmActions({ ntm, role, currentUserId }) {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Batal</AlertDialogCancel>
-                <AlertDialogAction onClick={() => run(() => archiveNtmAction(ntm.id))}>Ya, Arsipkan</AlertDialogAction>
+                <AlertDialogAction onClick={() => run(() => archiveNtmAction(ntm.id), 'NTM berhasil diarsipkan.')}>Ya, Arsipkan</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

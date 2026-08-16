@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StatusPill } from '@/components/ui/status-pill';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
+import { toast } from 'sonner';
 import {
   HEALTH_STATUS,
   HEALTH_STATUS_LABELS,
@@ -93,7 +94,10 @@ export function MonitoringDashboard({ initialSystemHealth, initialStationHealth,
     setIsRefreshing(true);
     try {
       const res = await fetch('/api/health', { cache: 'no-store' });
-      if (!res.ok) return;
+      if (!res.ok) {
+        toast.error('Gagal memuat status kesehatan sistem.');
+        return;
+      }
       const data = await res.json();
       if (!mountedRef.current) return;
       if (data.systemHealth) {

@@ -31,22 +31,8 @@ export const messageFormSchema = z.object({
     .min(1, 'Isi berita wajib diisi.')
     .max(4000, 'Isi berita maksimal 4000 karakter.'),
   location_description: z.string().trim().max(300).optional().or(z.literal('')),
-  latitude: z
-    .string()
-    .trim()
-    .optional()
-    .or(z.literal(''))
-    .refine((v) => !v || (!Number.isNaN(Number(v)) && Number(v) >= -90 && Number(v) <= 90), {
-      message: 'Latitude harus di antara -90 dan 90.',
-    }),
-  longitude: z
-    .string()
-    .trim()
-    .optional()
-    .or(z.literal(''))
-    .refine((v) => !v || (!Number.isNaN(Number(v)) && Number(v) >= -180 && Number(v) <= 180), {
-      message: 'Longitude harus di antara -180 dan 180.',
-    }),
+  latitude: z.string().trim().max(64, 'Latitude maksimal 64 karakter.').optional().or(z.literal('')),
+  longitude: z.string().trim().max(64, 'Longitude maksimal 64 karakter.').optional().or(z.literal('')),
   sender_name: z.string().trim().max(150).optional().or(z.literal('')),
   priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'CRITICAL'], { error: 'Pilih prioritas.' }),
 });

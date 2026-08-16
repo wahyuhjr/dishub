@@ -13,6 +13,7 @@ import { documentFormSchema } from '@/features/document-generator/schema';
 import { CATEGORY_LABELS } from '@/features/document-generator/categories';
 import { OfficialDocumentPreview } from '@/features/document-generator/templates/preview-templates';
 import { generateDocumentAction } from '@/features/document-generator/actions';
+import { toast } from 'sonner';
 
 const DEFAULT_VALUES = {
   message_number: '',
@@ -58,9 +59,11 @@ export function DocumentGeneratorForm() {
       const result = await generateDocumentAction(values);
       if (result?.error) {
         setServerError(result.error);
+        toast.error(result.error);
         return;
       }
       setGenerated(result.data);
+      toast.success('Dokumen berhasil dibuat.');
     });
   }
 

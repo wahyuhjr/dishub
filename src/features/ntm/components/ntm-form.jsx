@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { ntmFormSchema } from '@/features/ntm/schema';
 import { NTM_DOCUMENT_TYPE_LABELS } from '@/features/ntm/status-machine';
 import { createNtmAction, updateNtmAction } from '@/features/ntm/actions';
+import { toast } from 'sonner';
 
 const DEFAULT_VALUES = {
   ntm_number: '',
@@ -49,6 +50,7 @@ export function NtmForm({ mode = 'create', ntmDocumentId, initialValues }) {
       const result = await action;
       if (result?.error) {
         setServerError(result.error);
+        toast.error(result.error);
       }
       // On success these actions redirect() server-side.
     });

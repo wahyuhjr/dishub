@@ -7,8 +7,8 @@ import { z } from 'zod';
  *
  * Coordinates are required here (unlike relay-news's optional
  * lat/long) since the generated official document always states a
- * position — "Validasi koordinat" is an explicit requirement of this
- * module.
+ * position. They're free-text (no numeric/DMS format enforced) since
+ * operators may enter coordinates in different notations.
  */
 export const documentFormSchema = z.object({
   message_number: z
@@ -28,16 +28,12 @@ export const documentFormSchema = z.object({
     .string()
     .trim()
     .min(1, 'Latitude wajib diisi.')
-    .refine((v) => !Number.isNaN(Number(v)) && Number(v) >= -90 && Number(v) <= 90, {
-      message: 'Latitude harus berupa angka di antara -90 dan 90.',
-    }),
+    .max(64, 'Latitude maksimal 64 karakter.'),
   longitude: z
     .string()
     .trim()
     .min(1, 'Longitude wajib diisi.')
-    .refine((v) => !Number.isNaN(Number(v)) && Number(v) >= -180 && Number(v) <= 180, {
-      message: 'Longitude harus berupa angka di antara -180 dan 180.',
-    }),
+    .max(64, 'Longitude maksimal 64 karakter.'),
   incident_at: z.string().trim().min(1, 'Waktu kejadian wajib diisi.'),
   valid_until: z.string().trim().min(1, 'Waktu berlaku wajib diisi.'),
   navigation_area: z

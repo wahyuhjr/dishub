@@ -33,6 +33,7 @@ import {
   uploadAvatarAction,
   getUserActivityAction,
 } from '@/features/users/actions';
+import { toast } from 'sonner';
 
 function formatWib(value) {
   if (!value) return '—';
@@ -60,8 +61,13 @@ export function UserRowActions({ user, currentUserId }) {
     setError('');
     startTransition(async () => {
       const res = await setActiveAction({ id: user.id, is_active: !user.is_active });
-      if (res?.error) setError(res.error);
-      else setToggleOpen(false);
+      if (res?.error) {
+        setError(res.error);
+        toast.error(res.error);
+      } else {
+        toast.success(user.is_active ? `User "${user.username}" dinonaktifkan.` : `User "${user.username}" diaktifkan.`);
+        setToggleOpen(false);
+      }
     });
   }
 
@@ -69,8 +75,13 @@ export function UserRowActions({ user, currentUserId }) {
     setError('');
     startTransition(async () => {
       const res = await deleteUserAction(user.id);
-      if (res?.error) setError(res.error);
-      else setDeleteOpen(false);
+      if (res?.error) {
+        setError(res.error);
+        toast.error(res.error);
+      } else {
+        toast.success(`User "${user.username}" berhasil dihapus.`);
+        setDeleteOpen(false);
+      }
     });
   }
 
@@ -160,10 +171,13 @@ function ResetPasswordDialog({ user, open, onOpenChange }) {
     setError('');
     startTransition(async () => {
       const res = await resetPasswordAction({ id: user.id, password });
-      if (res?.error) setError(res.error);
-      else {
+      if (res?.error) {
+        setError(res.error);
+        toast.error(res.error);
+      } else {
         setDone(true);
         setPassword('');
+        toast.success('Password berhasil diperbarui.');
       }
     });
   }
@@ -213,8 +227,13 @@ function AvatarDialog({ user, open, onOpenChange }) {
     formData.set('id', user.id);
     startTransition(async () => {
       const res = await uploadAvatarAction(null, formData);
-      if (res?.error) setError(res.error);
-      else setDone(true);
+      if (res?.error) {
+        setError(res.error);
+        toast.error(res.error);
+      } else {
+        setDone(true);
+        toast.success('Foto profil berhasil diperbarui.');
+      }
     });
   }
 

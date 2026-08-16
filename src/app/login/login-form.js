@@ -1,7 +1,8 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { KeyRound } from 'lucide-react';
+import { toast } from 'sonner';
 import { loginAction } from './actions';
 
 const initialState = { error: null };
@@ -12,6 +13,10 @@ const fieldClassName =
 
 export default function LoginForm() {
   const [state, formAction, pending] = useActionState(loginAction, initialState);
+
+  useEffect(() => {
+    if (state?.error) toast.error(state.error);
+  }, [state]);
 
   return (
     <form action={formAction} className="flex flex-col gap-5" noValidate>
